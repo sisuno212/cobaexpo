@@ -1,20 +1,81 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Colors, Gradients } from '@/constants/Colors';
 import { TextStyles } from '@/constants/Typography';
-import { Wallet, ArrowUpRight, ArrowDownLeft, RefreshCw } from 'lucide-react-native';
+import { Wallet, ArrowUpRight, ArrowDownLeft, RefreshCw, CreditCard, Building2, Smartphone } from 'lucide-react-native';
 
 interface Transaction {
 }
 
 export const WalletScreen: React.FC = () => {
   const gradientColors = [...Gradients.primary];
-  
+
   const [balance] = useState(1250.50);
   const [transactions] = useState<Transaction[]>([])
+
+  // Modal states
+  const [depositModalVisible, setDepositModalVisible] = useState(false);
+  const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
+
+  // Deposit form data
+  const [depositAmount, setDepositAmount] = useState('');
+  const [depositDescription, setDepositDescription] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('credit_card');
+
+  // Withdraw form data
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [transferDestination, setTransferDestination] = useState('');
+  const [withdrawDescription, setWithdrawDescription] = useState('');
+
+  const paymentMethods = [
+    { id: 'credit_card', name: 'Credit Card', icon: CreditCard },
+    { id: 'bank_transfer', name: 'Bank Transfer', icon: Building2 },
+    { id: 'digital_wallet', name: 'Digital Wallet', icon: Smartphone },
+  ];
+
+  const handleDeposit = () => {
+    if (!depositAmount || parseFloat(depositAmount) <= 0) {
+      Alert.alert('Error', 'Please enter a valid amount');
+      return;
+    }
+
+    Alert.alert(
+      'Deposit Submitted',
+      `Your deposit of $${depositAmount} has been submitted and will be processed shortly.`,
+      [{ text: 'OK', onPress: () => setDepositModalVisible(false) }]
+    );
+
+    // Reset form
+    setDepositAmount('');
+    setDepositDescription('');
+    setSelectedPaymentMethod('credit_card');
+  };
+
+  const handleWithdraw = () => {
+    if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
+      Alert.alert('Error', 'Please enter a valid amount');
+      return;
+    }
+
+    if (!transferDestination.trim()) {
+      Alert.alert('Error', 'Please enter a transfer destination');
+      return;
+    }
+
+    Alert.alert(
+      'Withdrawal Request Submitted',
+      `Your withdrawal request for $${withdrawAmount} has been submitted. The withdrawal will be processed within 2x24 hours maximum.`,
+      [{ text: 'OK', onPress: () => setWithdrawModalVisible(false) }]
+    );
+
+    // Reset form
+    setWithdrawAmount('');
+    setTransferDestination('');
+    setWithdrawDescription('');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
