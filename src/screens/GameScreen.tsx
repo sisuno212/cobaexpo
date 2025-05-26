@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -18,7 +18,7 @@ export const GameScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.title}>Game Center</Text>
           <Text style={styles.subtitle}>Ready to play?</Text>
@@ -78,7 +78,7 @@ export const GameScreen: React.FC = () => {
             style={styles.actionButton}
           />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
