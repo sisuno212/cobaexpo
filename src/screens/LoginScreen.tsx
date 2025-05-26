@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Colors, Gradients } from '@/constants/Colors';
 import { TextStyles } from '@/constants/Typography';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react-native';
+import { useAuth } from '@/context/AuthContext';
 
 interface LoginScreenProps {
   navigation?: any;
@@ -25,6 +26,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -34,24 +36,32 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
     setLoading(true);
     
-    // Simulate login process
-    setTimeout(() => {
-      setLoading(false);
-      Alert.alert(
-        'Login Successful',
-        'Welcome back!',
-        [{ 
-          text: 'OK', 
-          onPress: () => {
-            if (onLoginSuccess) {
-              onLoginSuccess();
-            } else if (navigation) {
-              navigation.navigate('Home');
+    try {
+      const success = await login(email.trim(), password);
+      
+      if (success) {
+        Alert.alert(
+          'Login Successful',
+          'Welcome back!',
+          [{ 
+            text: 'OK', 
+            onPress: () => {
+              if (onLoginSuccess) {
+                onLoginSuccess();
+              } else if (navigation) {
+                navigation.navigate('Home');
+              }
             }
-          }
-        }]
-      );
-    }, 1500);
+          }]
+        );
+      } else {
+        Alert.alert('Login Failed', 'Invalid email or password. Try:\n• john@example.com / password123\n• jane@example.com / password456\n• demo@example.com / demo123');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

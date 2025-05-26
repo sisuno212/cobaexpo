@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -31,22 +31,27 @@ export const ProfileScreen: React.FC = () => {
           <Text style={styles.subtitle}>Manage your account</Text>
         </View>
 
-        {/* Profile Info */}
+        {/* Profile Overview */}
         <Card gradient gradientColors={gradientColors} style={styles.profileCard}>
           <View style={styles.profileHeader}>
             <View style={styles.avatar}>
-              <User color={Colors.text} size={32} />
+              {user?.avatar ? (
+                <Image source={{ uri: user.avatar }} style={styles.avatarImage} />
+              ) : (
+                <User color={Colors.text} size={40} />
+              )}
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>John Player</Text>
-              <Text style={styles.profileEmail}>john.player@email.com</Text>
-              <Text style={styles.profilePhone}>+1 (555) 123-4567</Text>
+              <Text style={styles.username}>{user?.fullName || 'Guest User'}</Text>
+              <Text style={styles.joinDate}>@{user?.username || 'guest'}</Text>
+              <Text style={styles.joinDate}>
+                Member since {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+              </Text>
             </View>
             <Button
               title="Edit"
               onPress={() => {}}
-              size="small"
-              variant="outline"
+              variant="ghost"
               style={styles.editButton}
             />
           </View>
@@ -199,13 +204,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: Colors.backgroundTertiary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
+  },
+  avatarImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
   },
   profileInfo: {
     flex: 1,

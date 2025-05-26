@@ -3,7 +3,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
+import { View, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { HomeScreen } from '@/screens/HomeScreen';
 import { DashboardScreen } from '@/screens/DashboardScreen';
 import { WalletScreen } from '@/screens/WalletScreen';
@@ -11,6 +13,7 @@ import { GameScreen } from '@/screens/GameScreen';
 import { BonusesScreen } from '@/screens/BonusesScreen';
 import { ReferralsScreen } from '@/screens/ReferralsScreen';
 import { ProfileScreen } from '@/screens/ProfileScreen';
+import { AuthNavigator } from '@/screens/AuthNavigator';
 import { 
   Home,
   LayoutDashboard, 
@@ -23,11 +26,20 @@ import {
 
 const Tab = createBottomTabNavigator();
 
-export default function App() {
+const AppContent: React.FC = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background }}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+
   return (
-    <>
-      <StatusBar style="light" backgroundColor={Colors.background} />
-      <NavigationContainer>
+    <NavigationContainer>
+      {isAuthenticated ? (
         <Tab.Navigator
           screenOptions={({ route }) => ({
             headerShown: false,
@@ -86,7 +98,25 @@ export default function App() {
           <Tab.Screen name="Referrals" component={ReferralsScreen} />
           <Tab.Screen name="Profile" component={ProfileScreen} />
         </Tab.Navigator>
-      </NavigationContainer>
-    </>
+      ) : (
+        <Tab.Navigator
+          screenOptions={{
+            headerShown: false,
+            tabBarStyle: { display: 'none' },
+          }}
+        >
+          <Tab.Screen name="Home" component={HomeScreen} />
+        </Tab.Navigator>
+      )}
+    </NavigationContainer>
+  );
+};
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <StatusBar style="light" backgroundColor={Colors.background} />
+      <AppContent />
+    </AuthProvider>
   );
 }

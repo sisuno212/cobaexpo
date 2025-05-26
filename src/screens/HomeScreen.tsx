@@ -1,6 +1,5 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -19,6 +18,8 @@ import {
   FileText,
   Shield
 } from 'lucide-react-native';
+import { useAuth } from '@/context/AuthContext';
+import { AuthNavigator } from './AuthNavigator';
 
 const { width } = Dimensions.get('window');
 
@@ -49,6 +50,8 @@ export const HomeScreen: React.FC = () => {
   const gradientColors = [...Gradients.primary];
   const scrollViewRef = useRef<ScrollView>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [authModalVisible, setAuthModalVisible] = useState(false);
+  const { isAuthenticated, user } = useAuth();
 
   const sliderImages: SliderImage[] = [
     {
@@ -128,9 +131,31 @@ export const HomeScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.title}>Casino Paradise</Text>
-          <Text style={styles.subtitle}>Your gaming adventure starts here</Text>
+          <Text style={styles.title}>
+            {isAuthenticated ? `Welcome back, ${user?.fullName?.split(' ')[0]}!` : 'Casino Paradise'}
+          </Text>
+          <Text style={styles.subtitle}>
+            {isAuthenticated ? 'Ready to continue your gaming journey?' : 'Your gaming adventure starts here'}
+          </Text>
         </View>
+
+        {/* Login Prompt for Guests */}
+        {!isAuthenticated && (
+          <Card style={styles.loginPromptCard}>
+            <View style={styles.loginPromptContent}>
+              <Text style={styles.loginPromptTitle}>Join the Fun!</Text>
+              <Text style={styles.loginPromptText}>
+                Sign in to access all features and compete with friends!
+              </Text>
+              <Button
+                title="Sign In / Register"
+                onPress={() => setAuthModalVisible(true)}
+                gradient
+                style={styles.loginPromptButton}
+              />
+            </View>
+          </Card>
+        )}
 
         {/* Image Slider */}
         <View style={styles.sliderContainer}>
@@ -155,11 +180,11 @@ export const HomeScreen: React.FC = () => {
               </View>
             ))}
           </ScrollView>
-          
+
           <TouchableOpacity style={styles.sliderButton} onPress={prevSlide}>
             <ChevronLeft color={Colors.text} size={20} />
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={[styles.sliderButton, styles.sliderButtonRight]} onPress={nextSlide}>
             <ChevronRight color={Colors.text} size={20} />
           </TouchableOpacity>
@@ -254,13 +279,13 @@ export const HomeScreen: React.FC = () => {
               <Text style={styles.infoText}>Frequently Asked Questions</Text>
               <ChevronRight color={Colors.textMuted} size={16} />
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={styles.infoItem}>
               <FileText color={Colors.primary} size={20} />
               <Text style={styles.infoText}>Terms of Service</Text>
               <ChevronRight color={Colors.textMuted} size={16} />
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={styles.infoItem}>
               <Shield color={Colors.primary} size={20} />
               <Text style={styles.infoText}>Privacy Policy</Text>
@@ -277,6 +302,19 @@ export const HomeScreen: React.FC = () => {
           style={styles.startButton}
         />
       </ScrollView>
+
+      {/* Auth Modal */}
+      <Modal
+        visible={authModalVisible}
+        animationType="slide"
+        presentationStyle="fullScreen"
+        onRequestClose={() => setAuthModalVisible(false)}
+      >
+        <AuthNavigator
+          initialScreen="login"
+          onAuthSuccess={() => setAuthModalVisible(false)}
+        />
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -495,6 +533,28 @@ const styles = StyleSheet.create({
     ...TextStyles.caption,
     color: Colors.text,
     opacity: 0.8,
+  },
+    loginPromptCard: {
+    marginBottom: 24,
+    padding: 16,
+  },
+  loginPromptContent: {
+    alignItems: 'center',
+  },
+  loginPromptTitle: {
+    ...TextStyles.h4,
+    color: Colors.text,
+    marginBottom: 8,
+  },
+  loginPromptText: {
+    ...TextStyles.body,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  loginPromptButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
   },
   infoCard: {
     marginBottom: 24,

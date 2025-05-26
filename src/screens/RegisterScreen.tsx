@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Colors } from '@/constants/Colors';
 import { TextStyles } from '@/constants/Typography';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react-native';
+import { useAuth } from '@/context/AuthContext';
 
 interface RegisterScreenProps {
   navigation?: any;
@@ -28,6 +29,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
 
   const handleRegister = async () => {
     if (!formData.fullName.trim() || !formData.email.trim() || !formData.password.trim()) {
@@ -47,24 +49,32 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
 
     setLoading(true);
     
-    // Simulate registration process
-    setTimeout(() => {
-      setLoading(false);
-      Alert.alert(
-        'Registration Successful',
-        'Your account has been created successfully!',
-        [{ 
-          text: 'OK', 
-          onPress: () => {
-            if (onRegisterSuccess) {
-              onRegisterSuccess();
-            } else if (navigation) {
-              navigation.navigate('Home');
+    try {
+      const success = await register(formData.email.trim(), formData.password, formData.fullName.trim());
+      
+      if (success) {
+        Alert.alert(
+          'Registration Successful',
+          'Your account has been created successfully! You received 1000 welcome coins!',
+          [{ 
+            text: 'OK', 
+            onPress: () => {
+              if (onRegisterSuccess) {
+                onRegisterSuccess();
+              } else if (navigation) {
+                navigation.navigate('Home');
+              }
             }
-          }
-        }]
-      );
-    }, 1500);
+          }]
+        );
+      } else {
+        Alert.alert('Registration Failed', 'An account with this email already exists.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateFormData = (field: keyof typeof formData, value: string) => {
