@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { Colors } from '@/constants/Colors';
+import { HomeScreen } from '@/screens/HomeScreen';
 import { DashboardScreen } from '@/screens/DashboardScreen';
 import { WalletScreen } from '@/screens/WalletScreen';
 import { GameScreen } from '@/screens/GameScreen';
@@ -11,6 +12,7 @@ import { BonusesScreen } from '@/screens/BonusesScreen';
 import { ReferralsScreen } from '@/screens/ReferralsScreen';
 import { ProfileScreen } from '@/screens/ProfileScreen';
 import { 
+  Home,
   LayoutDashboard, 
   Wallet, 
   Gamepad2, 
@@ -47,6 +49,9 @@ export default function App() {
               let IconComponent;
 
               switch (route.name) {
+                case 'Home':
+                  IconComponent = Home;
+                  break;
                 case 'Dashboard':
                   IconComponent = LayoutDashboard;
                   break;
@@ -66,13 +71,14 @@ export default function App() {
                   IconComponent = User;
                   break;
                 default:
-                  IconComponent = LayoutDashboard;
+                  IconComponent = Home;
               }
 
               return <IconComponent color={color} size={size} />;
             },
           })}
         >
+          <Tab.Screen name="Home" component={HomeScreen} />
           <Tab.Screen name="Dashboard" component={DashboardScreen} />
           <Tab.Screen name="Wallet" component={WalletScreen} />
           <Tab.Screen name="Game" component={GameScreen} />
