@@ -14,7 +14,7 @@ export const WalletScreen: React.FC = () => {
   const gradientColors = [...Gradients.primary];
   
   const [balance] = useState(1250.50);
-  const [transactions] = useState<Transaction[]>([
+  const [transactions] = useState<Transaction[]>([])
 
   return (
     <SafeAreaView style={styles.container}>

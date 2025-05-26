@@ -7,6 +7,11 @@ import { TextStyles } from '@/constants/Typography';
 import { Wallet, DollarSign, TrendingUp, Gift } from 'lucide-react-native';
 
 interface GameStats {
+  // Define your game stats properties here
+  // Example:
+  // wins: number;
+  // losses: number;
+  // highestScore: number;
 }
 
 export const DashboardScreen: React.FC = () => {
@@ -16,18 +21,16 @@ export const DashboardScreen: React.FC = () => {
     balance: 1250.50,
     level: 15,
   });
-  
+
   const secondaryGradient = [...Gradients.secondary];
-  
-  const [gameStats] = useState<GameStats[]>([
-    {
+  const [gameStats] = useState<GameStats[]>([]);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.title}>Dashboard</Text>
-          <Text style={styles.subtitle}>Welcome back, Player!</Text>
+          <Text style={styles.subtitle}>Welcome back, {user.username}!</Text>
         </View>
 
         {/* Balance Cards */}
@@ -37,7 +40,7 @@ export const DashboardScreen: React.FC = () => {
               <Wallet color={Colors.text} size={24} />
               <Text style={styles.balanceLabel}>Real Money</Text>
             </View>
-            <Text style={styles.balanceAmount}>$1,250.00</Text>
+            <Text style={styles.balanceAmount}>${user.balance.toFixed(2)}</Text>
           </Card>
 
           <Card gradient gradientColors={secondaryGradient} style={styles.balanceCard}>
@@ -45,7 +48,7 @@ export const DashboardScreen: React.FC = () => {
               <DollarSign color={Colors.text} size={24} />
               <Text style={styles.balanceLabel}>Coins</Text>
             </View>
-            <Text style={styles.balanceAmount}>12,500</Text>
+            <Text style={styles.balanceAmount}>{(user.balance * 10).toLocaleString()}</Text>
           </Card>
         </View>
 
@@ -223,5 +226,7 @@ const styles = StyleSheet.create({
     ...TextStyles.body,
     color: Colors.success,
     fontWeight: '600',
-  },
+  }
 });
+
+export default DashboardScreen;

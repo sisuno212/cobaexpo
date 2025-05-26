@@ -32,6 +32,9 @@ importers:
       '@supabase/supabase-js':
         specifier: 2.49.5-next.1
         version: 2.49.5-next.1
+      constants:
+        specifier: link:@/constants
+        version: link:@/constants
       expo:
         specifier: ~53.0.9
         version: 53.0.9(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
@@ -119,6 +122,9 @@ importers:
       react-native-web:
         specifier: ^0.20.0
         version: 0.20.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      screens:
+        specifier: link:@/screens
+        version: link:@/screens
       zustand:
         specifier: ^5.0.4
         version: 5.0.4(@types/react@19.0.14)(react@19.0.0)(use-sync-external-store@1.5.0(react@19.0.0))
