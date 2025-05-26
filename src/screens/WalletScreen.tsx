@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Modal, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -108,13 +108,13 @@ export const WalletScreen: React.FC = () => {
         <View style={styles.actionsContainer}>
           <Button
             title="Deposit"
-            onPress={() => {}}
+            onPress={() => setDepositModalVisible(true)}
             style={styles.actionButton}
             gradient
           />
           <Button
             title="Withdraw"
-            onPress={() => {}}
+            onPress={() => setWithdrawModalVisible(true)}
             variant="outline"
             style={styles.actionButton}
           />
@@ -174,6 +174,146 @@ export const WalletScreen: React.FC = () => {
           </View>
         </Card>
       </ScrollView>
+
+      {/* Deposit Modal */}
+      <Modal
+        visible={depositModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setDepositModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Deposit Funds</Text>
+            
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Amount ($)</Text>
+              <TextInput
+                style={styles.textInput}
+                value={depositAmount}
+                onChangeText={setDepositAmount}
+                placeholder="Enter amount"
+                keyboardType="numeric"
+                placeholderTextColor={Colors.textMuted}
+              />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Description (Optional)</Text>
+              <TextInput
+                style={styles.textInput}
+                value={depositDescription}
+                onChangeText={setDepositDescription}
+                placeholder="Enter description"
+                placeholderTextColor={Colors.textMuted}
+              />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Payment Method</Text>
+              {paymentMethods.map((method) => (
+                <TouchableOpacity
+                  key={method.id}
+                  style={[
+                    styles.paymentMethodItem,
+                    selectedPaymentMethod === method.id && styles.paymentMethodSelected
+                  ]}
+                  onPress={() => setSelectedPaymentMethod(method.id)}
+                >
+                  <method.icon 
+                    color={selectedPaymentMethod === method.id ? Colors.primary : Colors.textSecondary} 
+                    size={20} 
+                  />
+                  <Text style={[
+                    styles.paymentMethodText,
+                    selectedPaymentMethod === method.id && styles.paymentMethodTextSelected
+                  ]}>
+                    {method.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.modalButtons}>
+              <Button
+                title="Cancel"
+                onPress={() => setDepositModalVisible(false)}
+                variant="outline"
+                style={styles.modalButton}
+              />
+              <Button
+                title="Deposit"
+                onPress={handleDeposit}
+                gradient
+                style={styles.modalButton}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Withdraw Modal */}
+      <Modal
+        visible={withdrawModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setWithdrawModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Withdraw Funds</Text>
+            
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Amount ($)</Text>
+              <TextInput
+                style={styles.textInput}
+                value={withdrawAmount}
+                onChangeText={setWithdrawAmount}
+                placeholder="Enter amount"
+                keyboardType="numeric"
+                placeholderTextColor={Colors.textMuted}
+              />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Transfer Destination</Text>
+              <TextInput
+                style={styles.textInput}
+                value={transferDestination}
+                onChangeText={setTransferDestination}
+                placeholder="Bank account, wallet address, etc."
+                placeholderTextColor={Colors.textMuted}
+              />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Description (Optional)</Text>
+              <TextInput
+                style={styles.textInput}
+                value={withdrawDescription}
+                onChangeText={setWithdrawDescription}
+                placeholder="Enter description"
+                placeholderTextColor={Colors.textMuted}
+              />
+            </View>
+
+            <View style={styles.modalButtons}>
+              <Button
+                title="Cancel"
+                onPress={() => setWithdrawModalVisible(false)}
+                variant="outline"
+                style={styles.modalButton}
+              />
+              <Button
+                title="Send Request"
+                onPress={handleWithdraw}
+                gradient
+                style={styles.modalButton}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -302,5 +442,74 @@ const styles = StyleSheet.create({
   transactionAmount: {
     ...TextStyles.body,
     fontWeight: '600',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: Colors.backgroundSecondary,
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  modalTitle: {
+    ...TextStyles.h3,
+    color: Colors.text,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  formGroup: {
+    marginBottom: 16,
+  },
+  formLabel: {
+    ...TextStyles.body,
+    color: Colors.text,
+    marginBottom: 8,
+    fontWeight: '500',
+  },
+  textInput: {
+    backgroundColor: Colors.backgroundTertiary,
+    borderRadius: 8,
+    padding: 12,
+    color: Colors.text,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  paymentMethodItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: Colors.backgroundTertiary,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  paymentMethodSelected: {
+    borderColor: Colors.primary,
+    backgroundColor: Colors.backgroundSecondary,
+  },
+  paymentMethodText: {
+    ...TextStyles.body,
+    color: Colors.textSecondary,
+    marginLeft: 12,
+  },
+  paymentMethodTextSelected: {
+    color: Colors.primary,
+    fontWeight: '500',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 20,
+  },
+  modalButton: {
+    flex: 1,
   },
 });
