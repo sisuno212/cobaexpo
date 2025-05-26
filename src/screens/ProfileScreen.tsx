@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Colors, Gradients } from '@/constants/Colors';
 import { TextStyles } from '@/constants/Typography';
 import { User, Settings, CreditCard, Shield, LogOut, Edit } from 'lucide-react-native';
+import { AuthNavigator } from './AuthNavigator';
 
 interface UserProfile {
 }
@@ -16,6 +17,11 @@ export const ProfileScreen: React.FC = () => {
   const [user] = useState<UserProfile>({
     username: 'Player123',
   });
+
+  // Auth modal states
+  const [authModalVisible, setAuthModalVisible] = useState(false);
+  const [otpModalVisible, setOtpModalVisible] = useState(false);
+  const [authInitialScreen, setAuthInitialScreen] = useState<'login' | 'register' | 'forgotPassword' | 'otp'>('login');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -88,7 +94,10 @@ export const ProfileScreen: React.FC = () => {
           </Card>
 
           <Card style={styles.menuCard}>
-            <View style={styles.menuItem}>
+            <View 
+              style={styles.menuItem}
+              onTouchEnd={() => setOtpModalVisible(true)}
+            >
               <View style={styles.menuIcon}>
                 <Settings color={Colors.primary} size={20} />
               </View>
@@ -114,7 +123,10 @@ export const ProfileScreen: React.FC = () => {
           />
           <Button
             title="Sign Out"
-            onPress={() => {}}
+            onPress={() => {
+              setAuthInitialScreen('login');
+              setAuthModalVisible(true);
+            }}
             variant="ghost"
             style={styles.signOutButton}
           />
@@ -126,6 +138,32 @@ export const ProfileScreen: React.FC = () => {
           <Text style={styles.appInfoText}>© 2024 Gaming Platform</Text>
         </View>
       </ScrollView>
+
+      {/* Auth Modal */}
+      <Modal
+        visible={authModalVisible}
+        animationType="slide"
+        presentationStyle="fullScreen"
+        onRequestClose={() => setAuthModalVisible(false)}
+      >
+        <AuthNavigator
+          initialScreen={authInitialScreen}
+          onAuthSuccess={() => setAuthModalVisible(false)}
+        />
+      </Modal>
+
+      {/* OTP Modal */}
+      <Modal
+        visible={otpModalVisible}
+        animationType="slide"
+        presentationStyle="fullScreen"
+        onRequestClose={() => setOtpModalVisible(false)}
+      >
+        <AuthNavigator
+          initialScreen="otp"
+          onAuthSuccess={() => setOtpModalVisible(false)}
+        />
+      </Modal>
     </SafeAreaView>
   );
 };
